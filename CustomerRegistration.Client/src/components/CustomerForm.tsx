@@ -27,6 +27,9 @@ const CustomerForm: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
@@ -74,17 +77,65 @@ const CustomerForm: React.FC = () => {
     setFormData(prev => ({ ...prev, signatureBase64: '' }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
-      console.log('Form Data Ready for API:', formData);
-      alert('Phase 2 Complete: Signature captured and form is valid! Next step: API Integration.');
+    if (!validate()) return;
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch('/api/customers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setIsSuccess(true);
+      } else {
+        const errorData = await response.json();
+        setSubmitError(errorData.detail || 'An error occurred during registration.');
+      }
+    } catch (err) {
+      setSubmitError('Failed to connect to the server. Please ensure the API is running.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  if (isSuccess) {
+    return (
+      <div className="glass-card animate-fade-in" style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>✅</div>
+        <h2 style={{ color: 'var(--success)' }}>Registration Successful!</h2>
+        <p style={{ marginBottom: '2rem' }}>
+          Thank you, <strong>{formData.firstName}</strong>. Your onboarding profile has been created successfully.
+        </p>
+        <button className="primary-btn" onClick={() => window.location.reload()}>
+          Register Another Customer
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="glass-card animate-fade-in">
       <form onSubmit={handleSubmit} noValidate>
+        {submitError && (
+          <div className="error-message" style={{ 
+            background: 'rgba(239, 68, 68, 0.1)', 
+            padding: '1rem', 
+            borderRadius: '8px', 
+            marginBottom: '1.5rem',
+            textAlign: 'center'
+          }}>
+            {submitError}
+          </div>
+        )}
+
         <div className="form-group">
           <label htmlFor="firstName">First Name</label>
           <input
@@ -93,6 +144,7 @@ const CustomerForm: React.FC = () => {
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
+            disabled={isSubmitting}
             className={errors.firstName ? 'error' : ''}
             placeholder="e.g. John"
           />
@@ -107,6 +159,7 @@ const CustomerForm: React.FC = () => {
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
+            disabled={isSubmitting}
             className={errors.lastName ? 'error' : ''}
             placeholder="e.g. Doe"
           />
@@ -121,6 +174,7 @@ const CustomerForm: React.FC = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
+            disabled={isSubmitting}
             className={errors.email ? 'error' : ''}
             placeholder="john.doe@example.com"
           />
@@ -135,6 +189,7 @@ const CustomerForm: React.FC = () => {
             name="phoneNumber"
             value={formData.phoneNumber}
             onChange={handleChange}
+            disabled={isSubmitting}
             className={errors.phoneNumber ? 'error' : ''}
             placeholder="+1234567890"
           />
@@ -149,12 +204,13 @@ const CustomerForm: React.FC = () => {
           {errors.signatureBase64 && <div className="error-message">{errors.signatureBase64}</div>}
         </div>
 
-        <button type="submit" className="primary-btn">
-          Complete Registration
+        <button type="submit" className="primary-btn" disabled={isSubmitting}>
+          {isSubmitting ? 'Registering...' : 'Complete Registration'}
         </button>
       </form>
     </div>
   );
 };
+
 
 export default CustomerForm;
