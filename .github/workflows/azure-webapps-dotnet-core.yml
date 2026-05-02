@@ -24,16 +24,16 @@ jobs:
           dotnet-version: "10.x"
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build src/CustomerRegistration.API/CustomerRegistration.API.csproj --configuration Release
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: Publish API
+        run: dotnet publish src/CustomerRegistration.API/CustomerRegistration.API.csproj -c Release -o ${{ github.workspace }}/publish
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ${{ github.workspace }}/publish
 
   deploy:
     runs-on: ubuntu-latest
@@ -47,6 +47,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
+          path: ${{ github.workspace }}/publish
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -59,5 +60,5 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: "customer-registration"
-          package: .
+          app-name: "customer-registration-cbepgxgxd5akebhf"
+          package: ${{ github.workspace }}/publish
