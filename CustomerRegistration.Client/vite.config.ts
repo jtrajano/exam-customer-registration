@@ -1,22 +1,14 @@
 import { defineConfig } from 'vite'
-import react, { reactCompilerPreset } from '@vitejs/plugin-react'
-import babel from '@rolldown/plugin-babel'
-
-// https://vite.dev/config/
+import react from '@vitejs/plugin-react'
 export default defineConfig({
-  plugins: [
-    react(),
-    babel({ presets: [reactCompilerPreset()] })
-  ],
+  plugins: [react()],
   server: {
     proxy: {
+      // Whenever React asks for something starting with "/api"
       '/api': {
-        target: 'http://localhost:5280',
-        secure: false
-      },
-      '/weatherforecast': {
-        target: 'http://localhost:5280',
-        secure: false
+        target: 'http://localhost:5280', // Send it here!
+        secure: false,
+        changeOrigin: true
       }
     }
   }
