@@ -4,6 +4,7 @@ using CustomerRegistration.Application.Services;
 using CustomerRegistration.Application.DTOs;
 using CustomerRegistration.Domain.Entities;
 using CustomerRegistration.Domain.Interfaces;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CustomerRegistration.Test.UnitTests;
 
@@ -15,7 +16,7 @@ public class CustomerServiceTests
     public CustomerServiceTests()
     {
         _repositoryMock = new Mock<ICustomerRepository>();
-        _service = new CustomerService(_repositoryMock.Object);
+        _service = new CustomerService(_repositoryMock.Object, NullLogger<CustomerService>.Instance);
     }
 
     [Fact]
