@@ -25,7 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CustomerRegistration.Domain\CustomerRegistration.Domain.csproj" />
     <ProjectReference Include="..\CustomerRegistration.Application\CustomerRegistration.Application.csproj" />
-    <ProjectReference Include="..\CustomerRegistration.Api\CustomerRegistration.Api.csproj" />
+    <ProjectReference Include="..\CustomerRegistration.API\CustomerRegistration.API.csproj" />
   </ItemGroup>
 
 </Project>
