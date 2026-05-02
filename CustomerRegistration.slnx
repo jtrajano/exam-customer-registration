@@ -1,6 +1,6 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="src/CustomerRegistration.Api/CustomerRegistration.Api.csproj" />
+    <Project Path="src/CustomerRegistration.API/CustomerRegistration.API.csproj" />
     <Project Path="src/CustomerRegistration.Application/CustomerRegistration.Application.csproj" />
     <Project Path="src/CustomerRegistration.Domain/CustomerRegistration.Domain.csproj" />
     <Project Path="src/CustomerRegistration.Infrastructure/CustomerRegistration.Infrastructure.csproj" />
