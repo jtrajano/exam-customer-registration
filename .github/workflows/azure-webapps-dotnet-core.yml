@@ -29,6 +29,9 @@ jobs:
       - name: Publish API
         run: dotnet publish src/CustomerRegistration.API/CustomerRegistration.API.csproj -c Release -o ${{ github.workspace }}/publish
 
+      - name: Inspect publish output
+        run: find "${{ github.workspace }}/publish" -maxdepth 2 -type f | sort
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
@@ -62,3 +65,4 @@ jobs:
         with:
           app-name: "customer-registration"
           package: ${{ github.workspace }}/publish
+          startup-command: "dotnet CustomerRegistration.API.dll"
