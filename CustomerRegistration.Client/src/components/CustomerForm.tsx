@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import SignaturePad from './SignaturePad';
 
 interface FormData {
   firstName: string;
   lastName: string;
   email: string;
   phoneNumber: string;
+  signatureBase64: string;
 }
 
 interface FormErrors {
@@ -12,6 +14,7 @@ interface FormErrors {
   lastName?: string;
   email?: string;
   phoneNumber?: string;
+  signatureBase64?: string;
 }
 
 const CustomerForm: React.FC = () => {
@@ -20,6 +23,7 @@ const CustomerForm: React.FC = () => {
     lastName: '',
     email: '',
     phoneNumber: '',
+    signatureBase64: '',
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -43,6 +47,10 @@ const CustomerForm: React.FC = () => {
       newErrors.phoneNumber = 'Invalid phone number format (+1234567890)';
     }
 
+    if (!formData.signatureBase64) {
+      newErrors.signatureBase64 = 'Signature is required';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -50,17 +58,27 @@ const CustomerForm: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
 
+  const handleSignatureSave = (base64: string) => {
+    setFormData(prev => ({ ...prev, signatureBase64: base64 }));
+    if (errors.signatureBase64) {
+      setErrors(prev => ({ ...prev, signatureBase64: undefined }));
+    }
+  };
+
+  const handleSignatureClear = () => {
+    setFormData(prev => ({ ...prev, signatureBase64: '' }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      console.log('Form Data Validated:', formData);
-      alert('Phase 1 Complete: Form is valid! Next step: Signature Capture.');
+      console.log('Form Data Ready for API:', formData);
+      alert('Phase 2 Complete: Signature captured and form is valid! Next step: API Integration.');
     }
   };
 
@@ -123,23 +141,16 @@ const CustomerForm: React.FC = () => {
           {errors.phoneNumber && <div className="error-message">{errors.phoneNumber}</div>}
         </div>
 
-        <div style={{ marginTop: '2rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-          <p>Signature Capture (Phase 2) will be implemented here.</p>
-          <div style={{ 
-            height: '150px', 
-            border: '2px dashed var(--glass-border)', 
-            borderRadius: '12px', 
-            margin: '1rem 0',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            [ Signature Pad Placeholder ]
-          </div>
+        <div className="form-group">
+          <SignaturePad 
+            onSave={handleSignatureSave} 
+            onClear={handleSignatureClear} 
+          />
+          {errors.signatureBase64 && <div className="error-message">{errors.signatureBase64}</div>}
         </div>
 
         <button type="submit" className="primary-btn">
-          Proceed to Onboarding
+          Complete Registration
         </button>
       </form>
     </div>
