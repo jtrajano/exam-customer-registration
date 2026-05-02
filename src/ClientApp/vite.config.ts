@@ -8,4 +8,16 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5280',
+        secure: false
+      },
+      '/weatherforecast': {
+        target: 'http://localhost:5280',
+        secure: false
+      }
+    }
+  }
 })

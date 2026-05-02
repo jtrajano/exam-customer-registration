@@ -13,6 +13,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.MapFallbackToFile("index.html");
 
 var summaries = new[]
 {
